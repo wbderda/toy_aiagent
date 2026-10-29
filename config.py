@@ -1,1 +1,2 @@
 MAX_CHAR_READ_LIMIT = 10_000
+WORKING_DIR = "./calculator"
