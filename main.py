@@ -7,6 +7,7 @@ from openai import OpenAI
 
 from prompts import system_prompt
 from call_function import available_functions
+from functions.call_function import call_function
 
 
 def main() -> None:
@@ -60,7 +61,13 @@ def generate_content(client: OpenAI, messages: list, verbose: bool) -> None:
         if tool_call.type != "function":
             continue
         function_args = json.loads(tool_call.function.arguments or "{}")
-        print(f"Calling function: {tool_call.function.name}({function_args})")
+        result_message = call_function(tool_call, verbose)
+        if not result_message["content"]:
+            raise Exception(
+                f"Got empty content in result for: {tool_call.function.name}"
+            )
+        if verbose:
+            print(f"-> {result_message['content']}")
 
 
 if __name__ == "__main__":
