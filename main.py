@@ -32,11 +32,16 @@ def main() -> None:
 
     if args.verbose:
         print(f"User prompt: {args.user_prompt}\n")
+    end = None
+    for _ in range(20):
+        end = generate_content(client, messages, args.verbose)
+        if end is not None:
+            break
+    if end is None:
+        sys.exit(1)
 
-    generate_content(client, messages, args.verbose)
 
-
-def generate_content(client: OpenAI, messages: list, verbose: bool) -> None:
+def generate_content(client: OpenAI, messages: list, verbose: bool) -> bool | None:
     response = client.chat.completions.create(
         model="openrouter/free",
         messages=messages,
@@ -50,15 +55,17 @@ def generate_content(client: OpenAI, messages: list, verbose: bool) -> None:
         print("Response tokens:", response.usage.completion_tokens)
 
     message = response.choices[0].message
+    messages.append(message)
     if not message.tool_calls:
         print("Response:")
         print(message.content)
-        return
+        return True
 
     for tool_call in message.tool_calls:
         if tool_call.type != "function":
             continue
         result_message = call_function(tool_call, verbose)
+        messages.append(result_message)
         if not result_message.get("content"):
             raise RuntimeError(
                 f"Got empty content response for function: {tool_call.function.name}"
