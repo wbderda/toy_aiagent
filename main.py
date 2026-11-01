@@ -38,7 +38,7 @@ def main() -> None:
         if end is not None:
             break
     if end is None:
-        sys.exit(1)
+        exit(1)
 
 
 def generate_content(client: OpenAI, messages: list, verbose: bool) -> bool | None:

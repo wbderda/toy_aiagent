@@ -44,6 +44,14 @@ class TestCalculator(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.calculator.evaluate("+ 3")
 
+    def test_factorial(self) -> None:
+        result = self.calculator.evaluate("5!")
+        self.assertEqual(result, 120)
+
+    def test_factorial_precedence(self) -> None:
+        result = self.calculator.evaluate("2*5!")
+        self.assertEqual(result, 240)
+
 
 if __name__ == "__main__":
     unittest.main()
